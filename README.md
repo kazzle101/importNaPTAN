@@ -1,12 +1,12 @@
 # importNaPTAN
 A python script to import a NaPTAN Stops.csv file into a database
 
-The NaPTAN (National Public Transport Access Nodes) is a dataset of Great Britain's public transport access points, ie anywhere you can get on or off public transport (including bus, rail, tram, metro, underground, air and ferry services).
+The NaPTAN (National Public Transport Access Nodes) is a dataset of Great Britain's public transport access points, ie anywhere you can get on or off public transport (including bus, rail, tram, metro, underground, air and ferry services). As of December 2023 there are over 437,000 records in the file.
 
 You can download the latest Stops.csv file from:
 - [https://beta-naptan.dft.gov.uk/](https://beta-naptan.dft.gov.uk/) the beta indicates that this will go live at some point and the URL will change.
 
-This script cleans up the data, sets columns to int, float or string as appropriate and where the latitude and longitude are missing it updates these from the provided northings and eastings. Some columns are omitted as I found them to be empty or of no use to me - these are in the notTheseCols function.
+This script cleans up the data, sets columns to int, float or string as appropriate and where the latitude and longitude are missing it updates these from the provided northings and eastings. Some columns are omitted as I found them to be empty or of no use to me - these are listed in the notTheseCols function.
 
 ### Setup
 I am assuming familiarty with a MySQL database, and that you have the appropriate permissions to create, truncate, insert and update tables.
