@@ -13,12 +13,13 @@ from progress.bar import Bar # sudo apt install python3-progress  / pip install 
 _mydb = mysql.connector.connect(
         host="localhost",
         user="<your_username>",
-        password="<your_passord>",
+        password="<your_password>",
         database="<your_database>")
+
 
 ## download the CSV from: https://beta-naptan.dft.gov.uk/download
 ## old site: https://www.data.gov.uk/dataset/ff93ffc1-6656-47d8-9155-85ea0b8f2251/national-public-transport-access-nodes-naptan
-_NaPTANfile = "../Stops.csv"
+_NaPTANfile = "Stops.csv"
 _NaPTANtable = "NaPTANdata"
 
 class ImportBusStops:
@@ -74,6 +75,7 @@ class ImportBusStops:
     def setType(self, key, value, dbType=False, dbLen=0):
 
         dateFormat = "%Y-%m-%dT%H:%M:%S"
+        trueList = ["1", "true", "yes"]
 
         if key == "Easting" or key == "Northing" or key == "RevisionNumber":
             if dbType:
@@ -90,13 +92,20 @@ class ImportBusStops:
         if key == "CreationDateTime" or key == "ModificationDateTime":
             if dbType:
                 return "DATETIME"
-
             if value is None or not value:
                 return datetime.datetime(1800, 1, 1, 0, 0, 0)
-
             ds = value.split(".")[0]
             dtObj = datetime.datetime.strptime(ds, dateFormat)
             return dtObj
+        if key == "LocalityCentre":
+            if dbType:
+                return "TINYINT(1)"
+            if value is None or not value:
+                return False            
+            value = str(value).lower()
+            if value in trueList:
+                return True
+            return False
         
         if dbType:
             return f"VARCHAR({dbLen})"
@@ -135,9 +144,9 @@ class ImportBusStops:
         sql = sql[0:-2]+"\n"
         sql += ");\n"
         sql += " \n"
-        sql += f"ALTER TABLE `{_NaPTANtable}` \n"
-        sql += "\tADD UNIQUE KEY `ATCOCode` (`ATCOCode`), \n"
-        sql += "\tADD KEY `Longitude` (`Longitude`,`Latitude`);\n"
+        sql += f"ALTER TABLE {_NaPTANtable} \n"
+        sql += "\tADD UNIQUE KEY ATCOCode (ATCOCode), \n"
+        sql += "\tADD KEY LatLong_IDX (Longitude,Latitude);\n"
         db.execute(sql)
         _mydb.commit()
         return True
